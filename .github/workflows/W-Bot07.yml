@@ -1,0 +1,37 @@
+name: W-Bot07 (Rahbar Realms Agent)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Start Bot (Generates Pairing Code)
+        env:
+          # Yahan apna number country code ke sath likhein (bina + ke)
+          PAIRING_NUMBER: "923141619597" 
+          AUTH_DIR: "auth_info"
+        run: |
+          # Bot ko 60 seconds tak chalayein taake pairing code mil sake
+          timeout 60 node index.js || true
+
+      - name: Save Auth Info to Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WhatsApp-Session-Auth
+          path: auth_info/
+          retention-days: 1
